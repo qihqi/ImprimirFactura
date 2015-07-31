@@ -1,0 +1,120 @@
+    <config>
+    <database>localhost</database>
+    <databasename>henry</databasename>
+    <usuario>henry</usuario>
+    <bodega>1</bodega> <!-- 1 = menorista, 2 = mayorista -->
+   <factura>true</factura>
+   
+    <!-- Formato de impresion -->
+    <fontsize>10</fontsize>
+    <fontfamily>Courier New</fontfamily>
+   <factura_blanco>false</factura_blanco>
+   <libre>80</libre>
+   <max_desc>10</max_desc>
+   <max_cliente>10</max_cliente>
+    <impresion>
+	    
+	    <disp>
+            <x>12</x>
+            <y>-20</y>
+        </disp>
+        
+        <tamano> <!-- El tamano de papel de la factura -->
+            <x>475</x>
+            <y>529</y>
+        </tamano>
+        
+        <ruc> <!-- coordenada para escribir la ruc, lo mismo los de abajo -->
+            <x>50.7</x>
+            <y>105.8</y>
+        </ruc>
+        
+        <cliente>
+            <x>50.7</x>
+            <y>118</y>
+        </cliente>
+        
+        <direccion>   
+            <x>60.7</x>
+            <y>130</y>
+        </direccion>
+        
+        <fecha>
+            <x>360</x>
+            <y>105.8</y>
+        </fecha>
+        
+        <remision>
+            <x>280</x>
+            <y>118</y>
+        </remision>
+        
+        <telf>
+            <x>360</x>
+            <y>130</y>
+        </telf>
+
+        <ruc_delta> <!-- coordenada para escribir la ruc, lo mismo los de abajo -->
+            <x>-50</x>
+            <y>0</y>
+        </ruc_delta>
+        
+        <cliente_delta>
+            <x>-50</x>
+            <y>0</y>
+        </cliente_delta>
+        
+        <direccion_delta>   
+            <x>-60</x>
+            <y>0</y>
+        </direccion_delta>
+        
+        <fecha_delta>
+            <x>-50</x>
+            <y>0</y>
+        </fecha_delta>
+        
+        <telf_delta>
+            <x>-50</x>
+            <y>0</y>
+         </telf_delta>
+
+        
+        <contenido> <!-- por donde se comienza la primera linea -->
+            <x>10</x>
+            <y>165</y>
+            <sp>50</sp> <!-- espacios para el siguiente columna, cod, cant, desc, unit, total -->
+            <sp>50</sp>
+            <sp>260</sp>
+            <sp>50</sp>
+            <vsp>18</vsp> <!-- espacio entre 2 lineas -->
+        </contenido>
+        
+        <bruto>
+            <x>425</x>
+            <y>600</y>
+        </bruto>
+        <desc>            
+            <x>425</x>
+            <y>615</y>
+        </desc>
+        <neto>
+            <x>425</x>
+            <y>630</y>
+        </neto>
+        <iva>
+            <x>425</x>
+            <y>645</y>
+        </iva>
+        <total>
+            <x>425</x>
+            <y>660</y>
+        </total>
+        <title>
+            <x>-2</x>
+            <y>30</y>
+        </title>
+       <lineas>17</lineas>
+    </impresion>
+
+</config>

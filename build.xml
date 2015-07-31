@@ -1,0 +1,78 @@
+<project name="henry" default="dist" basedir=".">
+    <!-- set global properties for this build -->
+    <property name="lib" location="lib"/>
+    <property name="src" location="src"/>
+    <property name="build" location="build"/>
+    <property name="dist"  location="dist"/>
+
+
+    <path id="classpath" >
+        <fileset dir="${lib}" includes="*.jar" />
+    </path>
+    <target name="init">
+        <!-- Create the time stamp -->
+        <tstamp/>
+        <!-- Create the build directory structure used by compile -->
+        <mkdir dir="${build}"/>
+    </target>
+
+    <target name="compile" depends="init"
+        description="compile the source " >
+        <!-- Compile the java code from ${src} into ${build} -->
+        <javac includeantruntime="false" srcdir="${src}" destdir="${build}" classpathref="classpath" 
+            debug="true"
+            />
+    </target>
+
+<pathconvert property="windows.classpath" pathsep=" ">
+  <path refid="classpath"/>
+  <mapper>
+    <chainedmapper>
+       <flattenmapper/>
+       <globmapper from="*.jar" to="lib\*.jar;"/>
+    </chainedmapper>
+  </mapper>
+</pathconvert>
+<pathconvert property="manifest.classpath" pathsep=" ">
+  <path refid="classpath"/>
+  <mapper>
+    <chainedmapper>
+       <flattenmapper/>
+       <globmapper from="*.jar" to="lib/*.jar"/>
+    </chainedmapper>
+  </mapper>
+</pathconvert>
+    <target name="dist" depends="compile"
+        description="generate the distribution" >
+        <!-- Create the distribution directory -->
+        <mkdir dir="${dist}/lib"/>
+
+        <!-- make the factura executable -->
+        <jar jarfile="${dist}/lib/imprimirfactura.jar" basedir="${build}">
+            <manifest>
+                <attribute name="Main-Class" value="henry.ui.Main"/>
+                <attribute name="Class-Path" value="${manifest.classpath}"/>
+            </manifest>
+        </jar>
+    </target>
+    
+    <target name="dist-windows" depends="compile"
+        description="generate the distribution" >
+        <!-- Create the distribution directory -->
+        <mkdir dir="${dist}/lib"/>
+
+        <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+        <jar jarfile="${dist}/lib/imprimirfacturaw.jar" basedir="${build}">
+            <manifest>
+                <attribute name="Main-Class" value="henry.ui.Main"/>
+                <attribute name="Class-Path" value="${windows.classpath}"/>
+            </manifest>
+        </jar>
+    </target>
+    <target name="clean"
+        description="clean up" >
+        <!-- Delete the ${build} and ${dist} directory trees -->
+        <delete dir="${build}"/>
+        <delete dir="${dist}"/>
+    </target>
+</project>

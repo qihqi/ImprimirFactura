@@ -1,0 +1,3 @@
+ant dist && \
+cp dist/lib/imprimirfactura.jar ./ && \
+java -jar imprimirfactura.jar

@@ -1,0 +1,42 @@
+{
+    "fontsize": 10,
+    "fontfamily": "Courier New",
+    "factura": true,
+    "factura_blanco": true,
+    "libre": 80,
+    "max_cliente": 30,
+    "max_desc": 30,
+    "impresora_matriz": false,
+    "servidores":["localhost:8080", "192.168.0.23"],
+    "almacenes":["quinal", "bodega", "corpesut"],
+    "impression": {
+        "disp": [0, -50],
+        "tamano": [475, 529],
+        "ruc" : [50.7, 105.8],
+        "cliente": [50.7, 118],
+        "direccion": [60.7, 130],
+        "fecha": [360, 105.8],
+        "remision":[280, 118],
+        "telf":[360, 130],
+        "ruc_delta": [-50, 0],
+        "cliente_delta": [-50, 0],
+        "direccion_delta": [-60, 0],
+        "fecha_delta": [-50, 0],
+        "telf_delta": [-50, 0],
+        "contenido": {
+            "pos": [10, 165],
+            "sp":[50, 50, 260, 50],
+            "vsp":18
+        },
+        "bruto": [300, 550],
+        "desc": [300, 565],
+        "neto": [300, 580],
+        "iva": [300, 595],
+        "total": [300, 610], 
+        "title": [100.7, 85],
+        "lineas": 35,
+        "firma1": [0, 650],
+        "firma2": [150, 650],
+        "firma3": [300, 650]
+    }
+} 

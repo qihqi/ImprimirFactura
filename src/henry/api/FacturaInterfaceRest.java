@@ -37,7 +37,6 @@ import henry.model.Usuario;
 
 import static henry.Helpers.streamToString;
 
-
 /**
  * Created by han on 12/30/13.
  */
@@ -161,6 +160,11 @@ public class FacturaInterfaceRest implements FacturaInterface {
     public int guardarDocumento(Documento doc, boolean isFactura) {
         System.out.println("guardarDocumento");
         JsonObject factura = serializeDocumento(doc);
+        return guardarDocumentoObj(factura, isFactura);
+    }
+
+    public int guardarDocumentoObj(JsonObject factura, boolean isFactura) {
+        System.out.println("guardarDocumento");
         String content = gson.toJson(factura);
         System.out.println(content);
         String path = isFactura ? FACTURA_URL_PATH : VENTA_URL_PATH;
@@ -185,10 +189,9 @@ public class FacturaInterfaceRest implements FacturaInterface {
             ex.printStackTrace();
         }
         return -1;
-
     }
 
-    private JsonObject serializeDocumento(Documento doc) {
+    public JsonObject serializeDocumento(Documento doc) {
         JsonObject meta = new JsonObject();
         meta.add("client", gson.toJsonTree(doc.getCliente()));
         meta.addProperty("user", doc.getUser().getNombre());

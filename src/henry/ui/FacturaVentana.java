@@ -2,6 +2,7 @@ package henry.ui;
 
 import static henry.Helpers.displayAsMoney;
 import static henry.Helpers.streamToString;
+import static henry.Helpers.displayMilesimas;
 
 import henry.api.FacturaInterface;
 import henry.model.Documento;
@@ -86,6 +87,8 @@ public class FacturaVentana extends JFrame {
     private String baseUrl;
     private static int TIMEOUT_MILLIS = 30000;
     private RequestConfig timeoutConfig;
+    private List<Item> realItems;
+    private JLabel msg;
 
     private SearchDialog<Producto> prodSearchDialog =
             new SearchDialog<>(new SearchEngine<Producto>() {
@@ -179,13 +182,19 @@ public class FacturaVentana extends JFrame {
 
         load = new JButton("Cargar");
         print = new JButton("Imprimir");
+        JButton cancel = new JButton("Cancelar");
         input.add(load);
+        input.add(cancel);
         input.add(print, "wrap");
 
-        display = new JTextArea(20, 40);
+        msg = new JLabel();
+        input.add(msg, "span 3, wrap");
+
+        display = new JTextArea(100, 55);
         JScrollPane scroll = new JScrollPane(display);
         display.setLineWrap(true);
-        input.add(display);
+        display.setEditable(false);
+        input.add(display, "span 3");
         panel.add(input);
         setTitle("Imprimir Factura");
         String displayFacturaText = "";
@@ -196,49 +205,122 @@ public class FacturaVentana extends JFrame {
         load.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int num;
-                String method;
-                try {
-                    num = Integer.parseInt(pedidoField.getText());
-                    method = PEDIDO;
-                } catch (NumberFormatException e1) {
-                    try {
-                        num = Integer.parseInt(codigo.getText());
-                        method = FACTURA;
-                    } catch (NumberFormatException e2) {
-                        try {
-                            num = Integer.parseInt(codigoIngreso.getText());
-                            method = INGRESO;
-                        } catch (NumberFormatException e3) {
-                            display.setText("Codigos incorrecto");
-                            return;
-                        }
-                    }
+                List<Item> items = getItemFromUI();
+                if (items == null) {
+                    display.setText("Codigos incorrecto");
+                    return;
                 }
-                List<Item> items = api.getItems(method, num);
-                String s = "";
+                StringBuilder s = new StringBuilder();
+                int total = 0;
                 for (Item x : items) {
-                    s += gson.toJson(x) + '\n';
                     doc.addItem(x);
                 }
-                display.setText(s);
+
+                for (Item x : doc.getItems()) {
+                    s.append(displayMilesimas(x.getCantidad()));
+                    s.append('\t');
+                    s.append(x.getProducto().getNombre());
+                    s.append('\t');
+                    s.append(displayAsMoney(x.getProducto().getPrecio1()));
+                    s.append('\t');
+                    s.append(displayAsMoney(x.getSubtotal()));
+                    s.append('\n');
+                    total += x.getSubtotal();
+                }
+                doc.setSubtotal(total);
+                doc.setIvaPorciento(12);
+                int iva = total * 12 / 100;
+                StringBuilder s2 = new StringBuilder();
+                s2.append(String.format("Total: %s, Iva: %s\n", 
+                    displayAsMoney(doc.getTotal()), displayAsMoney(doc.getIva())));
+                s2.append(s.toString());
+                display.setText(s2.toString());
+            }
+        });
+
+        print.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveAndPrint();
+            }
+        });
+
+        cancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clear();
             }
         });
     }
 
-    private String getUrl(URI uri) {
-        HttpGet req = new HttpGet(uri);
-        req.setConfig(timeoutConfig);
-        try (CloseableHttpResponse response = httpClient.execute(req)) {
-            HttpEntity entity = response.getEntity();
-            if (response.getStatusLine().getStatusCode() == 200) {
-                String content = streamToString(entity.getContent());
-                return content;
+    private boolean saveAndPrint() {
+        if (cliente.getCliente() == null) {
+            msg.setText("Ingrese Cliente");
+            return false;
+        }
+        int factno;
+        try {
+            factno = Integer.parseInt(codigo.getText());
+        } catch (NumberFormatException e) {
+            msg.setText("Ingrese Numero de factura");
+            return false;
+        }
+        if (ruc.getText().length() < 5) {
+            msg.setText("Ingrese RUC");
+            return false;
+        }
+
+        doc.setUser(usuario);
+        doc.setCodigo(factno);
+        doc.setCliente(cliente.getCliente());
+        JsonObject fact = api.serializeDocumento(doc);
+        JsonObject meta = fact.getAsJsonObject("meta");
+        meta.addProperty("almacen_ruc", ruc.getText());
+        meta.remove("almacen_id");
+        JsonObject options = new JsonObject();
+        options.addProperty("no_alm_id", true);
+        fact.add("options", options);
+        if (api.guardarDocumentoObj(fact, true) > 0) {
+            if (printer.printFactura(doc)) {
+                clear();
+                return true;
             }
         }
-        catch (IOException e) {
-        }
-        return null;
+        return false;
     }
 
+    private List<Item> getItemFromUI() {
+        int num;
+        String method;
+        try {
+            num = Integer.parseInt(pedidoField.getText());
+            method = PEDIDO;
+        } catch (NumberFormatException e1) {
+            try {
+                num = Integer.parseInt(codigo.getText());
+                method = FACTURA;
+            } catch (NumberFormatException e2) {
+                try {
+                    num = Integer.parseInt(codigoIngreso.getText());
+                    method = INGRESO;
+                } catch (NumberFormatException e3) {
+                    return null;
+                }
+            }
+        }
+        List<Item> items = api.getItems(method, num);
+        return items;
+    }
+
+    void clear() {
+        codigo.setText("");
+        ruc.setText("");
+        codigoViejo.setText("");
+        codigoIngreso.setText("");
+        pedidoField.setText("");
+        display.setText("");
+        msg.setText("");
+        cliente.clear();
+        doc = new Documento();
+    }
 }

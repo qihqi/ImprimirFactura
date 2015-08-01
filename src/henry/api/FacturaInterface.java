@@ -6,6 +6,7 @@ import henry.model.Producto;
 import henry.model.Usuario;
 import henry.model.Item;
 
+import com.google.gson.JsonObject;
 import java.util.List;
 
 public interface FacturaInterface {
@@ -16,11 +17,13 @@ public interface FacturaInterface {
     List<Cliente> buscarCliente(String prefijo);
 
     int guardarDocumento(Documento doc, boolean isFactura);
+    int guardarDocumentoObj(JsonObject factura, boolean isFactura);
     Documento getPedidoPorCodigo(String codigo) throws NotFoundException;
 
     Usuario authenticate(String username, String password);
     void commitDocument(int docId);
     List<Item> getItems(String url, int num);
+    public JsonObject serializeDocumento(Documento doc);
 
     public static class NotFoundException extends Exception {
         public NotFoundException(String message) {

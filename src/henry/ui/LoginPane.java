@@ -76,15 +76,7 @@ public class LoginPane extends JPanel implements ActionListener{
         add(passLabel);
         add(pass, "wrap, width :200:");
 
-        add(serverLabel);
-        add(serverbox, "wrap, width :200:");
-        add(almacenLabel);
-        add(almacenbox, "wrap, width :200:");
 
-        JLabel numeroLabel = new JLabel("Numero de Factura");
-        add(numeroLabel); 
-        numeroFactura = new JTextField();
-        add(numeroFactura, "wrap, width :200:");
         JButton login = new JButton("Ingresar");
         add(login);
         add(message);

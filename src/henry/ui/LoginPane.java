@@ -43,7 +43,7 @@ public class LoginPane extends JPanel implements ActionListener{
     private JTextField multiplicador;
 
     private static final String[] SERVER_OPTS = new String[] {
-        "192.168.0.23", "localhost:8080"
+        "192.168.0.22", "192.168.0.23", "localhost:8080"
     };
     private static final String[] ALMACEN_OPTS = new String[] {
         "quinal", "bodega", "corpesut"
@@ -76,6 +76,7 @@ public class LoginPane extends JPanel implements ActionListener{
         add(passLabel);
         add(pass, "wrap, width :200:");
 
+        add(serverbox);
 
         JButton login = new JButton("Ingresar");
         add(login);

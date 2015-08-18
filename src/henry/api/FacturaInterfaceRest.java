@@ -348,14 +348,14 @@ public class FacturaInterfaceRest implements FacturaInterface {
         return null;
     }
 
-    public List<Item> getItems(String url, int num) {
+    public List<Item> getItems(String url, int num, boolean pedido) {
         String finalurl = String.format(url, num);
         URI uri;
         try {
             uri = new URIBuilder().setScheme("http")
-                                              .setHost("localhost:8080")
-                                              .setPath(finalurl)
-                                              .build();
+                .setHost(baseUrl)
+                .setPath(finalurl)
+                .build();
         }
         catch (URISyntaxException ex) {
             ex.printStackTrace();
@@ -370,10 +370,15 @@ public class FacturaInterfaceRest implements FacturaInterface {
         List<Item> result = new ArrayList<>();
         for (JsonElement e : items) {
             JsonObject obj = e.getAsJsonObject();
-            Item item = gson.fromJson(obj.toString(), Item.class);
-            if (item != null) {
-                result.add(item);
+            double cant = obj.get("cant").getAsDouble();
+            if (!pedido) {
+                cant = cant * 1000;
             }
+            Producto prod = gson.fromJson(obj.get("prod"), Producto.class);
+            Item item = new Item(); 
+            item.setProducto(prod);
+            item.setCantidad((int) cant);
+            result.add(item);
         }
         return result;
     }

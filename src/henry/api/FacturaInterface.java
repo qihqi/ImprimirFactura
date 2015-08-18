@@ -22,7 +22,7 @@ public interface FacturaInterface {
 
     Usuario authenticate(String username, String password);
     void commitDocument(int docId);
-    List<Item> getItems(String url, int num);
+    List<Item> getItems(String url, int num, boolean pedido);
     public JsonObject serializeDocumento(Documento doc);
 
     public static class NotFoundException extends Exception {

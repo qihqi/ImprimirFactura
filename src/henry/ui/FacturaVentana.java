@@ -63,12 +63,13 @@ public class FacturaVentana extends JFrame {
     private JTextField codigo;
     private JTextField ruc;
     private JTextField pedidoField;
+    private JTextField percentField;
     private JTextField codigoViejo;
     private JTextField codigoIngreso;
     private ClientePanel cliente;
     private Documento doc = new Documento();
     private static final String PEDIDO = "/api/pedido/%d";
-    private static final String FACTURA = "/api/bod/%d";
+    private static final String FACTURA = "/api/alm/2/nota/%d";
     private static final String INGRESO = "/api/ingreso/%d";
 
     final private FacturaInterface api;
@@ -165,10 +166,17 @@ public class FacturaVentana extends JFrame {
         input.add(ruc, "wrap");
         ruc.setColumns(20);
         
-        input.add(new JLabel("Por Nota de pedido: "));
         pedidoField = new JTextField();
-        input.add(pedidoField, "wrap");
         pedidoField.setColumns(20);
+        /*
+        input.add(new JLabel("Por Nota de pedido: "));
+        input.add(pedidoField, "wrap");
+        */
+
+        input.add(new JLabel("Porciento: "));
+        percentField = new JTextField();
+        percentField.setText("100");
+        input.add(percentField, "wrap");
 
         input.add(new JLabel("Por Factura de Bodega: "));
         codigoViejo = new JTextField();
@@ -206,6 +214,10 @@ public class FacturaVentana extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 List<Item> items = getItemFromUI();
+                int percent = 100;
+                try {
+                    percent = Integer.parseInt(percentField.getText());
+                } catch (NumberFormatException ex) { }
                 if (items == null) {
                     display.setText("Codigos incorrecto");
                     return;
@@ -213,6 +225,9 @@ public class FacturaVentana extends JFrame {
                 StringBuilder s = new StringBuilder();
                 int total = 0;
                 for (Item x : items) {
+                    Producto prod = x.getProducto();
+                    prod.setPrecio1(prod.getPrecio1() * percent / 100);
+                    prod.setPrecio2(prod.getPrecio2() * percent / 100);
                     doc.addItem(x);
                 }
 
@@ -293,11 +308,12 @@ public class FacturaVentana extends JFrame {
         int num;
         String method;
         try {
+            System.out.println(pedidoField.getText());
             num = Integer.parseInt(pedidoField.getText());
             method = PEDIDO;
         } catch (NumberFormatException e1) {
             try {
-                num = Integer.parseInt(codigo.getText());
+                num = Integer.parseInt(codigoViejo.getText());
                 method = FACTURA;
             } catch (NumberFormatException e2) {
                 try {
@@ -308,7 +324,7 @@ public class FacturaVentana extends JFrame {
                 }
             }
         }
-        List<Item> items = api.getItems(method, num);
+        List<Item> items = api.getItems(method, num, method.equals(PEDIDO));
         return items;
     }
 

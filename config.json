@@ -7,7 +7,7 @@
     "max_cliente": 30,
     "max_desc": 30,
     "impresora_matriz": false,
-    "servidores":["localhost:8080", "192.168.0.23"],
+    "servidores":["192.168.0.22", "localhost:8080", "192.168.0.23"],
     "almacenes":["quinal", "bodega", "corpesut"],
     "impression": {
         "disp": [0, -50],
